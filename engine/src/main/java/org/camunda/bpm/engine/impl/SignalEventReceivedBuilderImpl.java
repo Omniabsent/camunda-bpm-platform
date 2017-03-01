@@ -17,6 +17,7 @@ import static org.camunda.bpm.engine.impl.util.EnsureUtil.ensureNotNull;
 
 import java.util.Map;
 
+import org.camunda.bpm.engine.eventbuffer.StaticBuffer;
 import org.camunda.bpm.engine.impl.cmd.CommandLogger;
 import org.camunda.bpm.engine.impl.cmd.SignalEventReceivedCmd;
 import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
@@ -87,6 +88,8 @@ public class SignalEventReceivedBuilderImpl implements SignalEventReceivedBuilde
       throw LOG.exceptionDeliverSignalToSingleExecutionWithTenantId();
     }
 
+    StaticBuffer.addSignal(this.getSignalName(), this.getVariables());
+    
     SignalEventReceivedCmd command = new SignalEventReceivedCmd(this);
     commandExecutor.execute(command);
   }

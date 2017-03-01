@@ -18,12 +18,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.camunda.bpm.engine.ProcessEngineServices;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
+import org.camunda.bpm.engine.eventbuffer.StaticBuffer.BufferedSignal;
 import org.camunda.bpm.engine.impl.ProcessEngineLogger;
 import org.camunda.bpm.engine.impl.bpmn.behavior.NoneStartEventActivityBehavior;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
@@ -60,6 +62,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.util.FormPropertyStartCont
 import org.camunda.bpm.engine.impl.pvm.PvmActivity;
 import org.camunda.bpm.engine.impl.pvm.PvmProcessDefinition;
 import org.camunda.bpm.engine.impl.pvm.delegate.CompositeActivityBehavior;
+import org.camunda.bpm.engine.impl.pvm.delegate.SignallableActivityBehavior;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 import org.camunda.bpm.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.camunda.bpm.engine.impl.pvm.process.ScopeImpl;
@@ -395,6 +398,27 @@ public class ExecutionEntity extends PvmExecutionImpl implements Execution, Proc
     for (EventSubscriptionDeclaration declaration : EventSubscriptionDeclaration.getDeclarationsForScope(scope).values()) {
       if(!declaration.isStartEvent()) {
         declaration.createSubscriptionForExecution(this);
+    	//System.out.println("skip subscription: " + declaration.toString());
+      }
+    }
+    
+    // Replay Events from buffer
+    for (EventSubscriptionDeclaration declaration : EventSubscriptionDeclaration.getDeclarationsForScope(scope).values()) {
+      if(!declaration.isStartEvent()) {
+    	  SignallableActivityBehavior behave = (SignallableActivityBehavior) this.getActivity().getActivityBehavior();
+    	  // get events for declaration from static buffer
+    	  LinkedList<BufferedSignal> bufferedSignals = org.camunda.bpm.engine.eventbuffer.StaticBuffer.getEventsForDeclaration(declaration);
+    	  // replay events
+    	  // do I signal for every event or only for those where we have subscriptions?
+    	  for(BufferedSignal sig: bufferedSignals) {
+		    try {
+			    System.err.println("Replaying Event from buffer: " + sig);
+				behave.signal(this, sig.signalName, sig.signalPayload);
+			} catch (Exception e) {
+				System.err.println("An event from the buffer could not be replayed. Trace:");
+				e.printStackTrace();
+			}
+    	  }
       }
     }
   }
