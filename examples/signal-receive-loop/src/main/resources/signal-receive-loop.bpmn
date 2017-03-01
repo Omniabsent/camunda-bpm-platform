@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.6.0">
+  <bpmn:process id="signal-receive-loop" name="Signal Receive Loop" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Start">
+      <bpmn:outgoing>SequenceFlow_0isx1hp</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1764nzy" sourceRef="BoundaryEvent_04mohia" targetRef="Receive-3min-loop-signal" />
+    <bpmn:sequenceFlow id="SequenceFlow_0isx1hp" sourceRef="StartEvent_1" targetRef="Task_initContinue" />
+    <bpmn:sequenceFlow id="SequenceFlow_17dvjfd" sourceRef="Receive-3min-loop-signal" targetRef="Task_Continue" />
+    <bpmn:endEvent id="EndEvent_0ukykoo" name="finish">
+      <bpmn:incoming>SequenceFlow_08lv135</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1yoo56q" sourceRef="Task_Continue" targetRef="Task_Finish" />
+    <bpmn:sequenceFlow id="SequenceFlow_08lv135" sourceRef="Task_Finish" targetRef="EndEvent_0ukykoo" />
+    <bpmn:intermediateCatchEvent id="Receive-3min-loop-signal" name="Wait for Signal">
+      <bpmn:incoming>SequenceFlow_1764nzy</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0vk5541</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_17dvjfd</bpmn:outgoing>
+      <bpmn:signalEventDefinition signalRef="Signal_3min-loop" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:userTask id="Task_Continue" name="continue manually2" camunda:assignee="john">
+      <bpmn:incoming>SequenceFlow_17dvjfd</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1yoo56q</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="BoundaryEvent_04mohia" name="2 min" attachedToRef="Task_Finish">
+      <bpmn:outgoing>SequenceFlow_1764nzy</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT2M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:userTask id="Task_Finish" name="finish manually" camunda:assignee="john">
+      <bpmn:incoming>SequenceFlow_1yoo56q</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_08lv135</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_initContinue" name="continue manually1" camunda:assignee="john">
+      <bpmn:incoming>SequenceFlow_0isx1hp</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0vk5541</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0vk5541" sourceRef="Task_initContinue" targetRef="Receive-3min-loop-signal" />
+  </bpmn:process>
+  <bpmn:signal id="Signal_3min-loop" name="Signal_3min-loop" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="signal-receive-loop">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="163" y="300" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="169" y="336" width="24" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1764nzy_di" bpmnElement="SequenceFlow_1764nzy">
+        <di:waypoint xsi:type="dc:Point" x="748" y="260" />
+        <di:waypoint xsi:type="dc:Point" x="748" y="211" />
+        <di:waypoint xsi:type="dc:Point" x="420" y="211" />
+        <di:waypoint xsi:type="dc:Point" x="420" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="584" y="196" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0isx1hp_di" bpmnElement="SequenceFlow_0isx1hp">
+        <di:waypoint xsi:type="dc:Point" x="199" y="318" />
+        <di:waypoint xsi:type="dc:Point" x="252" y="318" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="226" y="303" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_17dvjfd_di" bpmnElement="SequenceFlow_17dvjfd">
+        <di:waypoint xsi:type="dc:Point" x="438" y="318" />
+        <di:waypoint xsi:type="dc:Point" x="532" y="318" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="485" y="303" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0ukykoo_di" bpmnElement="EndEvent_0ukykoo">
+        <dc:Bounds x="887" y="300" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="892" y="336" width="26" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1yoo56q_di" bpmnElement="SequenceFlow_1yoo56q">
+        <di:waypoint xsi:type="dc:Point" x="632" y="318" />
+        <di:waypoint xsi:type="dc:Point" x="698" y="318" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="665" y="303" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_08lv135_di" bpmnElement="SequenceFlow_08lv135">
+        <di:waypoint xsi:type="dc:Point" x="798" y="318" />
+        <di:waypoint xsi:type="dc:Point" x="887" y="318" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="843" y="303" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1rzyi3j_di" bpmnElement="Receive-3min-loop-signal">
+        <dc:Bounds x="402" y="300" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="384" y="336" width="72" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1b2370g_di" bpmnElement="Task_Continue">
+        <dc:Bounds x="532" y="278" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BoundaryEvent_1d1jxhd_di" bpmnElement="BoundaryEvent_04mohia">
+        <dc:Bounds x="730" y="260" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="768" y="248" width="27" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1wrucgd_di" bpmnElement="Task_Finish">
+        <dc:Bounds x="698" y="278" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0e8ns0q_di" bpmnElement="Task_initContinue">
+        <dc:Bounds x="252" y="278" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0vk5541_di" bpmnElement="SequenceFlow_0vk5541">
+        <di:waypoint xsi:type="dc:Point" x="352" y="318" />
+        <di:waypoint xsi:type="dc:Point" x="402" y="318" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="377" y="303" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
